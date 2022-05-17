@@ -2,7 +2,8 @@ FROM node:fermium-alpine
 LABEL maintainer="Ikonera" email="gabrielmlt@protonmail.ch"
 
 WORKDIR /app
-CP . .
+COPY . .
 
 RUN yarn
-RUN yarn start:prod
+
+CMD ["yarn", "start"]
