@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  socket_server:
+    build:
+      context: .
+    container_name: "socket_server"
+    restart: always
+    ports:
+      - "4600:4600"
