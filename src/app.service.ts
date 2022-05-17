@@ -4,7 +4,7 @@ import {
   WebSocketGateway,
 } from '@nestjs/websockets';
 
-@WebSocketGateway(8080)
+@WebSocketGateway(40000)
 export class AppService {
   @SubscribeMessage('offer')
   handleOffer(@MessageBody() data: any): any {
