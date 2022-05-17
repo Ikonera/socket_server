@@ -4,7 +4,10 @@ import {
   WebSocketGateway,
 } from '@nestjs/websockets';
 
-@WebSocketGateway(40000)
+@WebSocketGateway(40000, {
+  transports: ['websocket'],
+  cors: { origin: 'http://localhost' },
+})
 export class AppService {
   @SubscribeMessage('offer')
   handleOffer(@MessageBody() data: any): any {

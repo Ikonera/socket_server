@@ -8,3 +8,4 @@ services:
     restart: always
     ports:
       - "4600:4600"
+      - "40000:40000"
