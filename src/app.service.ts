@@ -6,9 +6,23 @@ import {
 
 @WebSocketGateway(8080)
 export class AppService {
-  @SubscribeMessage('webrtc')
-  handleMessage(@MessageBody() data: string): string {
+  @SubscribeMessage('offer')
+  handleOffer(@MessageBody() data: any): any {
     console.log(data);
-    return 'hello from server';
+    // TODO emit offer from emitter to receiver
+    return {
+      target: 'receiver',
+      data: data,
+    };
+  }
+
+  @SubscribeMessage('answer')
+  handleAnswer(@MessageBody() data: any): any {
+    console.log(data);
+    // TODO emit answer from receiver to emitter
+    return {
+      target: 'emitter',
+      data: data,
+    };
   }
 }
