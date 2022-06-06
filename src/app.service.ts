@@ -15,7 +15,24 @@ export class AppService {
 			console.log("[MediaSoup] New worker : [pid: %s]", worker.pid)
 		})
 
-		const router = await worker.createRouter()
+		const mediaCodecs = [{
+			kind: "audio",
+			mimeType: "audio/opus",
+			clockRate: 48000,
+			channels: 2
+		}, {
+			kind: "video",
+			mimeType: "video/H264",
+			clockRate: 90000,
+			parameters: {
+				"packetization-mode"      : 1,
+				"profile-level-id"        : "42e01f",
+				"level-asymmetry-allowed" : 1
+				}
+		}]
+
+		// @ts-ignore
+		const router = await worker.createRouter({ mediaCodecs })
 
 		worker.on("died", error => {
 			console.log("[MediaSoup] Worker [%s] dying error : %s", [worker.pid, error])
@@ -31,9 +48,13 @@ export class AppService {
 			enableTcp: true,
 			preferUdp: true,
 		})
+		console.log("[MediaSoup] Transport ID : ", webrtcTransport.id)
+		console.log("[MediaSoup] ICE Candidates : ", webrtcTransport.iceCandidates)
+		console.log("[MediaSoup] ICE Parameters : ", webrtcTransport.iceParameters)
+		console.log("[MediaSoup] DTLS Parameters : ", webrtcTransport.dtlsParameters)
 
 		router.observer.on("newtransport", transport => {
-			console.log("[MediaSoup] Router [%s] added Transport instance [%s]", [router.id, transport.id])
+			console.log("[MediaSoup] Router [%s] added transport : %s", [router.id, transport.id])
 		})
 
 		router.on("workerclose", () => {
@@ -43,7 +64,7 @@ export class AppService {
 		return {
 			router: router,
 			worker: worker,
-			transportId: webrtcTransport
+			transport: webrtcTransport,
 		}
 	}
 
