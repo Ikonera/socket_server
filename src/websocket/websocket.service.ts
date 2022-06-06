@@ -15,9 +15,19 @@ export class WebsocketService {
     async handleEvent(@MessageBody() data: any): Promise<any> {
         switch (data.type) {
             case "wantToConnect":
-                const { router } = await this.appService.initiateMeeting()
+                const { router, transport } = await this.appService.initiateMeeting()
+                const transportObj = {
+                    id: transport.id,
+                    iceCandidates: transport.iceCandidates,
+                    iceParameters: transport.iceParameters,
+                    dtlsParameters: transport.dtlsParameters,
+                }
                 console.log("[WebSocketService - handleEvent - wantToConnect] router id : %s", router.id)
-                return router.rtpCapabilities
+                return {
+                    type: "rtpCapabilities",
+                    data: router.rtpCapabilities,
+                    transport: transportObj
+                }
         }
         console.log("[WebSocketService - handleEvent] data : %s", data)
     }
