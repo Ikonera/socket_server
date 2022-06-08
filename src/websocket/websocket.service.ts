@@ -13,14 +13,14 @@ export class WebsocketService {
 
     @SubscribeMessage("event")
     async handleEvent(@MessageBody() data: any): Promise<any> {
+        const { worker, router, webrtcTransport, createProducer } = await this.appService.initiateMeeting()
         switch (data.type) {
             case "wantToConnect":
-                const { router, transport } = await this.appService.initiateMeeting()
                 const transportObj = {
-                    id: transport.id,
-                    iceCandidates: transport.iceCandidates,
-                    iceParameters: transport.iceParameters,
-                    dtlsParameters: transport.dtlsParameters,
+                    id: webrtcTransport.id,
+                    iceCandidates: webrtcTransport.iceCandidates,
+                    iceParameters: webrtcTransport.iceParameters,
+                    dtlsParameters: webrtcTransport.dtlsParameters,
                 }
                 console.log("[WebSocketService - handleEvent - wantToConnect] router id : %s", router.id)
                 return {
@@ -28,6 +28,15 @@ export class WebsocketService {
                     data: router.rtpCapabilities,
                     transport: transportObj
                 }
+            case "transport-connect":
+                console.log("[WebSocketService - transport-connect] Message data : ")
+                console.log(JSON.parse(data))
+                break
+            case "transport-produce":
+                console.log("[WebSocketService - transport-produce] Message data : ")
+                console.log(data)
+                return await createProducer(data.data)
+
         }
         console.log("[WebSocketService - handleEvent] data : %s", data)
     }
