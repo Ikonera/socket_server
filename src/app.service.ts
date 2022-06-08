@@ -1,5 +1,5 @@
-import { Injectable } from "@nestjs/common";
-import { createWorker, observer } from "mediasoup";
+import {Injectable} from "@nestjs/common";
+import {createWorker, observer} from "mediasoup";
 
 @Injectable()
 export class AppService {
@@ -70,15 +70,38 @@ export class AppService {
 		})
 
 		const createProducer = async (params) => {
-			const producer = await webrtcTransport.produce(params)
-			return producer.id
+			return await webrtcTransport.produce(params)
 		}
+
+		const createConsumer = async (params) => {
+			try {
+				console.log("[MediaSoup] Consumer params : ", params)
+				return await webrtcTransport.consume(params)
+			}
+			catch (e) {
+				console.log("[MediaSoup - error] Error : ", e)
+			}
+		}
+
+		const canConsume = async (producerId, rtpCapabilities) => {
+			return router.canConsume({ producerId, rtpCapabilities})
+		}
+
+		webrtcTransport.observer.on("newproducer", producer => {
+			console.log("[WebSocket] New producer : %s", producer.id)
+		})
+
+		webrtcTransport.observer.on("newconsumer", consumer => {
+			console.log("[WeSocket] New consumer : ", consumer)
+		})
 
 		return {
 			router,
 			worker,
 			webrtcTransport,
 			createProducer,
+			createConsumer,
+			canConsume,
 		}
 	}
 

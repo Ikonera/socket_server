@@ -13,7 +13,7 @@ export class WebsocketService {
 
     @SubscribeMessage("event")
     async handleEvent(@MessageBody() data: any): Promise<any> {
-        const { worker, router, webrtcTransport, createProducer } = await this.appService.initiateMeeting()
+        const { worker, router, webrtcTransport, createProducer, createConsumer, canConsume } = await this.appService.initiateMeeting()
         switch (data.type) {
             case "wantToConnect":
                 const transportObj = {
@@ -35,8 +35,15 @@ export class WebsocketService {
             case "transport-produce":
                 console.log("[WebSocketService - transport-produce] Message data : ")
                 console.log(data)
-                return await createProducer(data.data)
-
+                let producer = await createProducer(data.data)
+                let consumer = await createConsumer({
+                    producerId: producer.id,
+                    rtpCapabilities: data.rtpCapabilities
+                })
+                await consumer.pause()
+                console.log("[MediaSoup] Can consume : ", await canConsume(producer.id, data.rtpCapabilities))
+                await consumer.resume()
+                return producer.id
         }
         console.log("[WebSocketService - handleEvent] data : %s", data)
     }
