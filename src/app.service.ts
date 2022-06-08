@@ -48,6 +48,14 @@ export class AppService {
 			enableTcp: true,
 			preferUdp: true,
 		})
+
+		await webrtcTransport.connect({
+			dtlsParameters: {
+				role: "server",
+				fingerprints: webrtcTransport.dtlsParameters.fingerprints
+			}
+		})
+
 		console.log("[MediaSoup] Transport ID : ", webrtcTransport.id)
 		console.log("[MediaSoup] ICE Candidates : ", webrtcTransport.iceCandidates)
 		console.log("[MediaSoup] ICE Parameters : ", webrtcTransport.iceParameters)
@@ -61,10 +69,16 @@ export class AppService {
 			console.log("[MediaSoup] Router [%s] closed due to Worker [%s] closed : %s", [router.id, worker.pid])
 		})
 
+		const createProducer = async (params) => {
+			const producer = await webrtcTransport.produce(params)
+			return producer.id
+		}
+
 		return {
-			router: router,
-			worker: worker,
-			transport: webrtcTransport,
+			router,
+			worker,
+			webrtcTransport,
+			createProducer,
 		}
 	}
 
