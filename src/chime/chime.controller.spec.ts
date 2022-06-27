@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { WebsocketController } from './websocket.controller';
+import { ChimeController } from './chime.controller';
 
-describe('WebsocketController', () => {
-  let controller: WebsocketController;
+describe('ChimeController', () => {
+  let controller: ChimeController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [WebsocketController],
+      controllers: [ChimeController],
     }).compile();
 
-    controller = module.get<WebsocketController>(WebsocketController);
+    controller = module.get<ChimeController>(ChimeController);
   });
 
   it('should be defined', () => {
