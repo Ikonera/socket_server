@@ -45,4 +45,20 @@ export class ChimeService {
 		return response
 	}
 
+	getJoiningMeetingAttendee = async (meetingId: string) => {
+		const existingMeeting = await this.chime.getMeeting({
+			MeetingId: meetingId
+		}).promise()
+		const newCreatedAttendee = await this.chime.createAttendee({
+			MeetingId: meetingId,
+			ExternalUserId: this.uuid
+		}).promise()
+		this.logger.log("Get joining attendee response : ")
+		this.logger.debug(newCreatedAttendee)
+		this.logger.log("Get already existing meeting response : ")
+		this.logger.debug(existingMeeting)
+		return {
+			existingMeeting, newCreatedAttendee
+		}
+	}
 }
